@@ -24,8 +24,10 @@ class IconVersionPlugin implements Plugin<Project> {
         def log = project.logger
         project.android.applicationVariants.all { BaseVariant variant ->
 
-            // Dont want to modify release builds
-            if (!variant.buildType.debuggable) {
+            // Don't want to modify release builds (of production flavors)
+            def prodFlavorsDefined = config.productionFlavors.size()
+            if ((!prodFlavorsDefined || variant.flavorName in config.productionFlavors)
+                    && !variant.buildType.debuggable) {
                 log.info "IconVersionPlugin. Skipping non-debuggable variant: $variant.name"
                 return
             }
@@ -43,7 +45,10 @@ class IconVersionPlugin implements Plugin<Project> {
                         findIcons(resDir, manifest).each { File icon ->
                             log.info "Adding flavor name and version to: " + icon.absolutePath
 
-                            def buildName = variant.flavorName + " " + variant.buildType.name
+                            def buildName = variant.flavorName;
+                            if (config.forceBuildType || prodFlavorsDefined && variant.buildType.debuggable) {
+                                buildName += " " + variant.buildType.name
+                            }
                             def version = variant.versionName
 
                             addTextToImage(icon, config, buildName, version)

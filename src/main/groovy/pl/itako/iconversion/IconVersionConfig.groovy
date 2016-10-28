@@ -31,6 +31,19 @@ class IconVersionConfig {
      */
     int[] textColor = [255, 255, 255, 255]
 
+    /**
+     * If set to true always indicate build type. Otherwise type is omitted for non-debuggable variants
+     * or when only debuggable variants are decorated (productionFlavors is empty).
+     */
+    boolean forceBuildType = false
+
+    /**
+     * Allows to list flavors which are published and should not have any icon decorations added.
+     * If the list is empty, only debuggable variants are decorated, and build type info is not attached
+     * unless forceBuildType is set.
+     */
+    String[] productionFlavors = []
+
     public Color getBackgroundOverlayColor() {
         return intArrayToColor(backgroundOverlayColor) ?: TRANSPARENT
     }
